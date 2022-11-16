@@ -13,6 +13,8 @@ const VIEW_MODE = {
     WEEK: 'Week',
     MONTH: 'Month',
     YEAR: 'Year',
+    HOUR: 'Hour',
+    MINUTE: 'Minute'
 };
 
 export default class Gantt {
@@ -79,11 +81,11 @@ export default class Gantt {
             step: 24,
             view_modes: [...Object.values(VIEW_MODE)],
             bar_height: 20,
-            bar_corner_radius: 3,
+            bar_corner_radius: 1,
             arrow_curve: 5,
             padding: 18,
-            view_mode: 'Day',
-            date_format: 'YYYY-MM-DD',
+            view_mode: 'Hour',
+            date_format: 'YYYY-MM-DD HH:mm:ss',
             popup_trigger: 'click',
             custom_popup_html: null,
             language: 'en',
@@ -200,6 +202,12 @@ export default class Gantt {
         } else if (view_mode === VIEW_MODE.YEAR) {
             this.options.step = 24 * 365;
             this.options.column_width = 120;
+        } else if (view_mode === VIEW_MODE.HOUR) {
+            this.options.step = 1;
+            this.options.column_width = 60
+        } else if (view_mode === VIEW_MODE.MINUTE) {
+            this.options.step = 1;
+            this.options.column_width = 180
         }
     }
 
@@ -234,7 +242,14 @@ export default class Gantt {
         } else if (this.view_is(VIEW_MODE.YEAR)) {
             this.gantt_start = date_utils.add(this.gantt_start, -2, 'year');
             this.gantt_end = date_utils.add(this.gantt_end, 2, 'year');
-        } else {
+        }  else if (this.view_is(VIEW_MODE.HOUR)) {
+            this.gantt_start = date_utils.start_of(this.gantt_start, -1, 'day');
+            this.gantt_end = date_utils.add(this.gantt_end, 2, 'day');
+        }  else if (this.view_is(VIEW_MODE.MINUTE)) {
+            this.gantt_start = date_utils.start_of(this.gantt_start, -5, 'hour');
+            this.gantt_end = date_utils.add(this.gantt_end, 1, 'day');
+        }
+        else {
             this.gantt_start = date_utils.add(this.gantt_start, -1, 'month');
             this.gantt_end = date_utils.add(this.gantt_end, 1, 'month');
         }
@@ -252,6 +267,8 @@ export default class Gantt {
                     cur_date = date_utils.add(cur_date, 1, 'year');
                 } else if (this.view_is(VIEW_MODE.MONTH)) {
                     cur_date = date_utils.add(cur_date, 1, 'month');
+                } else if (this.view_is(VIEW_MODE.MINUTE)) {
+                    cur_date = date_utils.add(cur_date, 1, 'minute');
                 } else {
                     cur_date = date_utils.add(
                         cur_date,
@@ -270,6 +287,7 @@ export default class Gantt {
     }
 
     render() {
+        const scroll_pos = document.body.innerHTML.scrollLeft
         this.clear();
         this.setup_layers();
         this.make_grid();
@@ -278,7 +296,9 @@ export default class Gantt {
         this.make_arrows();
         this.map_arrows_on_bars();
         this.set_width();
-        this.set_scroll_position();
+
+        // document.getElementById('app').scrollLeft = scroll_pos
+        // this.set_scroll_position();
     }
 
     setup_layers() {
@@ -496,6 +516,10 @@ export default class Gantt {
                 'HH',
                 this.options.language
             ),
+            Minute_lower:
+                date_utils.format(date, 'DD MMM HH mm', this.options.language),   
+            Hour_lower:
+                 date_utils.format(date, 'HH', this.options.language),
             Day_lower:
                 date.getDate() !== last_date.getDate()
                     ? date_utils.format(date, 'D', this.options.language)
@@ -519,6 +543,14 @@ export default class Gantt {
                               this.options.language
                           )
                         : date_utils.format(date, 'D', this.options.language)
+                    : '',
+            Minute_upper:
+            date.getDate() !== last_date.getDate()
+                ? date_utils.format(date, 'D MMM HH', this.options.language)
+                : '',
+            Hour_upper:
+                date.getDate() !== last_date.getDate()
+                    ? date_utils.format(date, 'D MMM', this.options.language)
                     : '',
             Day_upper:
                 date.getMonth() !== last_date.getMonth()
@@ -549,6 +581,10 @@ export default class Gantt {
             'Quarter Day_upper': 0,
             'Half Day_lower': (this.options.column_width * 2) / 2,
             'Half Day_upper': 0,
+            Minute_lower: 0,
+            Minute_upper: (this.options.column_width) / 2, 
+            Hour_lower: 0,
+            Hour_upper: (this.options.column_width * 24) / 2,
             Day_lower: this.options.column_width / 2,
             Day_upper: (this.options.column_width * 30) / 2,
             Week_lower: 0,
@@ -633,7 +669,6 @@ export default class Gantt {
             (hours_before_first_task / this.options.step) *
                 this.options.column_width -
             this.options.column_width;
-
         parent_element.scrollLeft = scroll_pos;
     }
 

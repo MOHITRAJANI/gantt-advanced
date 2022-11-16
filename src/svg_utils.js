@@ -7,7 +7,19 @@ export function $(expr, con) {
 export function createSVG(tag, attrs) {
     const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
     for (let attr in attrs) {
-        if (attr === 'append_to') {
+        if(attr === 'class' && attrs['class'] == 'grid-header')
+        {
+            const parentDiv = document.createElement('div')
+            parentDiv.className = 'sticky-parent'
+            elem.setAttribute('class', 'grid-header')
+            parentDiv.appendChild(elem)
+            // if (attr === 'append_to') {
+                const parent = attrs.append_to;
+                parent.appendChild(parentDiv);
+                break
+            // }
+        }
+        else if (attr === 'append_to') {
             const parent = attrs.append_to;
             parent.appendChild(elem);
         } else if (attr === 'innerHTML') {

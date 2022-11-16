@@ -5,7 +5,12 @@ export default class Bar {
     constructor(gantt, task) {
         this.set_defaults(gantt, task);
         this.prepare();
-        this.draw();
+        if(this.show_diamond == 1) {
+            this.drawDiamond()
+        }
+        else{
+            this.draw();
+        }
         this.bind();
     }
 
@@ -26,9 +31,32 @@ export default class Bar {
         this.x = this.compute_x();
         this.y = this.compute_y();
         this.corner_radius = this.gantt.options.bar_corner_radius;
-        this.duration =
+        if (this.gantt.view_is('Minute')) {
+            this.duration =
+            date_utils.diff(this.task._end, this.task._start, 'minute') /
+            this.gantt.options.step;
+            if (this.duration < 1) {
+                this.duration =
+                (date_utils.diff(this.task._end, this.task._start, 'second') /
+                this.gantt.options.step) / (this.gantt.options.column_width / 3);
+                
+            }
+
+        }
+        else
+        {
+            this.duration =
             date_utils.diff(this.task._end, this.task._start, 'hour') /
             this.gantt.options.step;
+            if (this.duration < 1) {
+                this.duration =
+                (date_utils.diff(this.task._end, this.task._start, 'minute') /
+                this.gantt.options.step) / (this.gantt.options.column_width / 3);
+                if(this.duration < 1) {
+                    this.show_diamond = 1
+                }
+            }
+        }
         this.width = this.gantt.options.column_width * this.duration;
         this.progress_width =
             this.gantt.options.column_width *
@@ -73,6 +101,15 @@ export default class Bar {
         this.draw_resize_handles();
     }
 
+    drawDiamond() {
+        this.$bar = createSVG('polygon', {
+            points: `${this.x},${this.y} ${this.x+7},${this.y+7} ${this.x+14},${this.y} ${this.x+7},${this.y-7} ${this.x},${this.y}`,
+            fill: 'blue',
+            class: 'diamond',
+            append_to: this.bar_group,
+        });
+    }
+
     draw_bar() {
         this.$bar = createSVG('rect', {
             x: this.x,
@@ -101,7 +138,8 @@ export default class Bar {
             height: this.height,
             rx: this.corner_radius,
             ry: this.corner_radius,
-            class: 'bar-progress',
+            // class: 'bar-progress',
+            fill:'#ec7d82',
             append_to: this.bar_group,
         });
 
@@ -315,6 +353,17 @@ export default class Bar {
             const diff = date_utils.diff(task_start, gantt_start, 'day');
             x = (diff * column_width) / 30;
         }
+
+        if (this.gantt.view_is('Hour')) {
+            const diff = date_utils.diff(task_start, gantt_start, 'minute');
+            x = (diff);
+        }
+
+        if (this.gantt.view_is('Minute')) {
+            const diff = date_utils.diff(task_start, gantt_start, 'seconds');
+            x = (diff)*3;
+        }
+
         return x;
     }
 
