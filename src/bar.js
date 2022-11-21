@@ -138,8 +138,7 @@ export default class Bar {
             height: this.height,
             rx: this.corner_radius,
             ry: this.corner_radius,
-            // class: 'bar-progress',
-            fill:'#ec7d82',
+            class: 'bar-progress',
             append_to: this.bar_group,
         });
 
