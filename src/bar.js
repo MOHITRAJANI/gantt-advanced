@@ -104,8 +104,7 @@ export default class Bar {
     drawDiamond() {
         this.$bar = createSVG('polygon', {
             points: `${this.x},${this.y} ${this.x+7},${this.y+7} ${this.x+14},${this.y} ${this.x+7},${this.y-7} ${this.x},${this.y}`,
-            fill: 'blue',
-            class: 'diamond',
+            class: 'bar-progress',
             append_to: this.bar_group,
         });
     }
