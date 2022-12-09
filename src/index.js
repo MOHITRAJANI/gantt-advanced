@@ -3,7 +3,6 @@ import { $, createSVG } from './svg_utils';
 import Bar from './bar';
 import Arrow from './arrow';
 import Popup from './popup';
-
 import './gantt.scss';
 
 const VIEW_MODE = {
@@ -246,8 +245,8 @@ export default class Gantt {
             this.gantt_start = date_utils.start_of(this.gantt_start, -1, 'day');
             this.gantt_end = date_utils.add(this.gantt_end, 2, 'day');
         }  else if (this.view_is(VIEW_MODE.MINUTE)) {
-            this.gantt_start = date_utils.start_of(this.gantt_start, -5, 'hour');
-            this.gantt_end = date_utils.add(this.gantt_end, 1, 'day');
+            this.gantt_start = date_utils.start_of(new Date(this.options.start_time), 'hour');
+            this.gantt_end = new Date(this.options.end_time)
         }
         else {
             this.gantt_start = date_utils.add(this.gantt_start, -1, 'month');
