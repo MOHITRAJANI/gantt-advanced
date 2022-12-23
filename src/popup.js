@@ -23,10 +23,8 @@ export default class Popup {
         if (!options.target_element) {
             throw new Error('target_element is required to show popup');
         }
-        if (!options.position) {
-            options.position = 'left';
-        }
         const target_element = options.target_element;
+        const elem = document.getElementById('gantt')
 
         if (this.custom_html) {
             let html = this.custom_html(options.task);
@@ -44,18 +42,32 @@ export default class Popup {
         let position_meta;
         if (target_element instanceof HTMLElement) {
             position_meta = target_element.getBoundingClientRect();
-        } else if (target_element instanceof SVGElement) {
+        } else if (target_element instanceof SVGElement && options.target_element) {
             position_meta = options.target_element.getBBox();
         }
 
-        if (options.position === 'left') {
+        if ((Math.abs(elem.getBoundingClientRect().x) + window.innerWidth) > (position_meta.x + position_meta.width)) {
             this.parent.style.left =
                 position_meta.x + (position_meta.width + 10) + 'px';
             this.parent.style.top = position_meta.y + 'px';
 
             this.pointer.style.transform = 'rotateZ(90deg)';
-            this.pointer.style.left = '-7px';
+            this.pointer.style.left = '-10px';
             this.pointer.style.top = '2px';
+        }
+        else if ((Math.abs(elem.getBoundingClientRect().x) + window.innerWidth) <= (position_meta.x + position_meta.width)) {
+            if(options.title.length > 31 )
+            {
+                this.parent.style.left = position_meta.x - ( options.title.length * 7.03) + 'px';
+            }
+            else
+            {
+                this.parent.style.left = position_meta.x - ( 221.47 ) + 'px';
+            }
+            this.parent.style.top = position_meta.y + 'px';
+            this.pointer.style.transform = 'rotateZ(270deg)';
+            this.pointer.style.right = '-14px';
+            this.pointer.style.top = '2px';   
         }
 
         // show
