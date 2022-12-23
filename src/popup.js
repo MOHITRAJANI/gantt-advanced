@@ -48,11 +48,11 @@ export default class Popup {
 
         if ((Math.abs(elem.getBoundingClientRect().x) + window.innerWidth) > (position_meta.x + position_meta.width)) {
             this.parent.style.left =
-                position_meta.x + (position_meta.width + 10) + 'px';
+                position_meta.x + (position_meta.width + 25) + 'px';
             this.parent.style.top = position_meta.y + 'px';
 
             this.pointer.style.transform = 'rotateZ(90deg)';
-            this.pointer.style.left = '-10px';
+            this.pointer.style.left = '-9px';
             this.pointer.style.top = '2px';
         }
         else if ((Math.abs(elem.getBoundingClientRect().x) + window.innerWidth) <= (position_meta.x + position_meta.width)) {
