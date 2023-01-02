@@ -731,38 +731,6 @@ export default class Gantt {
             });
         });
 
-        $.on(this.$svg, 'mousemove', (e) => {
-            if (!action_in_progress()) return;
-            const dx = e.offsetX - x_on_start;
-            const dy = e.offsetY - y_on_start;
-
-            bars.forEach((bar) => {
-                const $bar = bar.$bar;
-                $bar.finaldx = this.get_snap_position(dx);
-                this.hide_popup();
-                if (is_resizing_left) {
-                    if (parent_bar_id === bar.task.id) {
-                        bar.update_bar_position({
-                            x: $bar.ox + $bar.finaldx,
-                            width: $bar.owidth - $bar.finaldx,
-                        });
-                    } else {
-                        bar.update_bar_position({
-                            x: $bar.ox + $bar.finaldx,
-                        });
-                    }
-                } else if (is_resizing_right) {
-                    if (parent_bar_id === bar.task.id) {
-                        bar.update_bar_position({
-                            width: $bar.owidth + $bar.finaldx,
-                        });
-                    }
-                } else if (is_dragging) {
-                    bar.update_bar_position({ x: $bar.ox + $bar.finaldx });
-                }
-            });
-        });
-
         document.addEventListener('mouseup', (e) => {
             if (is_dragging || is_resizing_left || is_resizing_right) {
                 bars.forEach((bar) => bar.group.classList.remove('active'));
